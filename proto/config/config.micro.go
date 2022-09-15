@@ -12,9 +12,8 @@ import (
 
 import (
 	context "context"
-	api "github.com/micro/micro/v3/service/api"
-	client "github.com/micro/micro/v3/service/client"
-	server "github.com/micro/micro/v3/service/server"
+	client "github.com/micro/go-micro/client"
+	server "github.com/micro/go-micro/server"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -29,16 +28,9 @@ var _ = math.Inf
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
 // Reference imports to suppress errors if they are not otherwise used.
-var _ api.Endpoint
 var _ context.Context
 var _ client.Option
 var _ server.Option
-
-// Api Endpoints for Config service
-
-func NewConfigEndpoints() []*api.Endpoint {
-	return []*api.Endpoint{}
-}
 
 // Client API for Config service
 
@@ -58,6 +50,12 @@ type configService struct {
 }
 
 func NewConfigService(name string, c client.Client) ConfigService {
+	if c == nil {
+		c = client.NewClient()
+	}
+	if len(name) == 0 {
+		name = "go.micro.srv.config.config"
+	}
 	return &configService{
 		c:    c,
 		name: name,
@@ -137,7 +135,6 @@ func (c *configService) Watch(ctx context.Context, in *WatchRequest, opts ...cli
 }
 
 type Config_WatchService interface {
-	Context() context.Context
 	SendMsg(interface{}) error
 	RecvMsg(interface{}) error
 	Close() error
@@ -150,10 +147,6 @@ type configServiceWatch struct {
 
 func (x *configServiceWatch) Close() error {
 	return x.stream.Close()
-}
-
-func (x *configServiceWatch) Context() context.Context {
-	return x.stream.Context()
 }
 
 func (x *configServiceWatch) SendMsg(m interface{}) error {
@@ -239,7 +232,6 @@ func (h *configHandler) Watch(ctx context.Context, stream server.Stream) error {
 }
 
 type Config_WatchStream interface {
-	Context() context.Context
 	SendMsg(interface{}) error
 	RecvMsg(interface{}) error
 	Close() error
@@ -252,10 +244,6 @@ type configWatchStream struct {
 
 func (x *configWatchStream) Close() error {
 	return x.stream.Close()
-}
-
-func (x *configWatchStream) Context() context.Context {
-	return x.stream.Context()
 }
 
 func (x *configWatchStream) SendMsg(m interface{}) error {
