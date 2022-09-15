@@ -34,35 +34,35 @@ var _ server.Option
 
 // Client API for Config service
 
-type ConfigService interface {
+type ConfigClient interface {
 	Create(ctx context.Context, in *CreateRequest, opts ...client.CallOption) (*CreateResponse, error)
 	Update(ctx context.Context, in *UpdateRequest, opts ...client.CallOption) (*UpdateResponse, error)
 	Delete(ctx context.Context, in *DeleteRequest, opts ...client.CallOption) (*DeleteResponse, error)
 	Search(ctx context.Context, in *SearchRequest, opts ...client.CallOption) (*SearchResponse, error)
 	Read(ctx context.Context, in *ReadRequest, opts ...client.CallOption) (*ReadResponse, error)
 	AuditLog(ctx context.Context, in *AuditLogRequest, opts ...client.CallOption) (*AuditLogResponse, error)
-	Watch(ctx context.Context, in *WatchRequest, opts ...client.CallOption) (Config_WatchService, error)
+	Watch(ctx context.Context, in *WatchRequest, opts ...client.CallOption) (Config_WatchClient, error)
 }
 
-type configService struct {
+type configClient struct {
 	c    client.Client
 	name string
 }
 
-func NewConfigService(name string, c client.Client) ConfigService {
+func NewConfigClient(name string, c client.Client) ConfigClient {
 	if c == nil {
 		c = client.NewClient()
 	}
 	if len(name) == 0 {
 		name = "go.micro.srv.config.config"
 	}
-	return &configService{
+	return &configClient{
 		c:    c,
 		name: name,
 	}
 }
 
-func (c *configService) Create(ctx context.Context, in *CreateRequest, opts ...client.CallOption) (*CreateResponse, error) {
+func (c *configClient) Create(ctx context.Context, in *CreateRequest, opts ...client.CallOption) (*CreateResponse, error) {
 	req := c.c.NewRequest(c.name, "Config.Create", in)
 	out := new(CreateResponse)
 	err := c.c.Call(ctx, req, out, opts...)
@@ -72,7 +72,7 @@ func (c *configService) Create(ctx context.Context, in *CreateRequest, opts ...c
 	return out, nil
 }
 
-func (c *configService) Update(ctx context.Context, in *UpdateRequest, opts ...client.CallOption) (*UpdateResponse, error) {
+func (c *configClient) Update(ctx context.Context, in *UpdateRequest, opts ...client.CallOption) (*UpdateResponse, error) {
 	req := c.c.NewRequest(c.name, "Config.Update", in)
 	out := new(UpdateResponse)
 	err := c.c.Call(ctx, req, out, opts...)
@@ -82,7 +82,7 @@ func (c *configService) Update(ctx context.Context, in *UpdateRequest, opts ...c
 	return out, nil
 }
 
-func (c *configService) Delete(ctx context.Context, in *DeleteRequest, opts ...client.CallOption) (*DeleteResponse, error) {
+func (c *configClient) Delete(ctx context.Context, in *DeleteRequest, opts ...client.CallOption) (*DeleteResponse, error) {
 	req := c.c.NewRequest(c.name, "Config.Delete", in)
 	out := new(DeleteResponse)
 	err := c.c.Call(ctx, req, out, opts...)
@@ -92,7 +92,7 @@ func (c *configService) Delete(ctx context.Context, in *DeleteRequest, opts ...c
 	return out, nil
 }
 
-func (c *configService) Search(ctx context.Context, in *SearchRequest, opts ...client.CallOption) (*SearchResponse, error) {
+func (c *configClient) Search(ctx context.Context, in *SearchRequest, opts ...client.CallOption) (*SearchResponse, error) {
 	req := c.c.NewRequest(c.name, "Config.Search", in)
 	out := new(SearchResponse)
 	err := c.c.Call(ctx, req, out, opts...)
@@ -102,7 +102,7 @@ func (c *configService) Search(ctx context.Context, in *SearchRequest, opts ...c
 	return out, nil
 }
 
-func (c *configService) Read(ctx context.Context, in *ReadRequest, opts ...client.CallOption) (*ReadResponse, error) {
+func (c *configClient) Read(ctx context.Context, in *ReadRequest, opts ...client.CallOption) (*ReadResponse, error) {
 	req := c.c.NewRequest(c.name, "Config.Read", in)
 	out := new(ReadResponse)
 	err := c.c.Call(ctx, req, out, opts...)
@@ -112,7 +112,7 @@ func (c *configService) Read(ctx context.Context, in *ReadRequest, opts ...clien
 	return out, nil
 }
 
-func (c *configService) AuditLog(ctx context.Context, in *AuditLogRequest, opts ...client.CallOption) (*AuditLogResponse, error) {
+func (c *configClient) AuditLog(ctx context.Context, in *AuditLogRequest, opts ...client.CallOption) (*AuditLogResponse, error) {
 	req := c.c.NewRequest(c.name, "Config.AuditLog", in)
 	out := new(AuditLogResponse)
 	err := c.c.Call(ctx, req, out, opts...)
@@ -122,7 +122,7 @@ func (c *configService) AuditLog(ctx context.Context, in *AuditLogRequest, opts 
 	return out, nil
 }
 
-func (c *configService) Watch(ctx context.Context, in *WatchRequest, opts ...client.CallOption) (Config_WatchService, error) {
+func (c *configClient) Watch(ctx context.Context, in *WatchRequest, opts ...client.CallOption) (Config_WatchClient, error) {
 	req := c.c.NewRequest(c.name, "Config.Watch", &WatchRequest{})
 	stream, err := c.c.Stream(ctx, req, opts...)
 	if err != nil {
@@ -131,7 +131,7 @@ func (c *configService) Watch(ctx context.Context, in *WatchRequest, opts ...cli
 	if err := stream.Send(in); err != nil {
 		return nil, err
 	}
-	return &configServiceWatch{stream}, nil
+	return &configClientWatch{stream}, nil
 }
 
 type Config_WatchService interface {
@@ -141,23 +141,23 @@ type Config_WatchService interface {
 	Recv() (*WatchResponse, error)
 }
 
-type configServiceWatch struct {
+type configClientWatch struct {
 	stream client.Stream
 }
 
-func (x *configServiceWatch) Close() error {
+func (x *configClientWatch) Close() error {
 	return x.stream.Close()
 }
 
-func (x *configServiceWatch) SendMsg(m interface{}) error {
+func (x *configClientWatch) SendMsg(m interface{}) error {
 	return x.stream.Send(m)
 }
 
-func (x *configServiceWatch) RecvMsg(m interface{}) error {
+func (x *configClientWatch) RecvMsg(m interface{}) error {
 	return x.stream.Recv(m)
 }
 
-func (x *configServiceWatch) Recv() (*WatchResponse, error) {
+func (x *configClientWatch) Recv() (*WatchResponse, error) {
 	m := new(WatchResponse)
 	err := x.stream.Recv(m)
 	if err != nil {
