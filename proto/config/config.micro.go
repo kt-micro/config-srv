@@ -134,7 +134,7 @@ func (c *configClient) Watch(ctx context.Context, in *WatchRequest, opts ...clie
 	return &configClientWatch{stream}, nil
 }
 
-type Config_WatchService interface {
+type Config_WatchClient interface {
 	SendMsg(interface{}) error
 	RecvMsg(interface{}) error
 	Close() error
