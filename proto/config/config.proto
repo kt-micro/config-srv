@@ -4,6 +4,8 @@ package go.micro.srv.config.config;
 
 import "github.com/micro/go-os/config/proto/config.proto";
 
+option go_package = "github.com/micro/config-srv/proto/config;config";
+
 service Config {
 	rpc Create(CreateRequest) returns (CreateResponse) {}
 	rpc Update(UpdateRequest) returns (UpdateResponse) {}
